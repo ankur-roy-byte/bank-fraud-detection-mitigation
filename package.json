@@ -1,6 +1,21 @@
 {
-  "name": "bank",
-  "version": "0.0.0",
+  "name": "bank-fraud-detection-mitigation",
+  "version": "1.0.0",
+  "description": "Advanced banking application with real-time fraud detection and mitigation capabilities",
+  "author": "Ankur Roy <ankur.roy@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ankur-roy-byte/bank-fraud-detection-mitigation.git"
+  },
+  "keywords": [
+    "banking",
+    "fraud-detection",
+    "angular",
+    "security",
+    "fintech",
+    "transaction-monitoring"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
