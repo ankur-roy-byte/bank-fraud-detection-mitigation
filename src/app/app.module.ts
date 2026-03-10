@@ -12,6 +12,7 @@ import { RegistercardComponent } from './registercard/registercard.component';
 import { TransactionComponent } from './transaction/transaction.component';
 import { DeleteComponent } from './delete/delete.component';
 import {HttpClientModule} from '@angular/common/http';
+import { FraudDetectionComponent } from './fraud-detection/fraud-detection.component';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import {HttpClientModule} from '@angular/common/http';
     RegistercardComponent,
     TransactionComponent,
     DeleteComponent,
+    FraudDetectionComponent,
   ],
   imports: [
     BrowserModule,

@@ -10,14 +10,15 @@ margin-bottom: 37px; " >
     <div class="text-end">
         <button (click)="logout()" class="btn btn-secondary">logout</button>
     </div>
-    
-  
+
+
 </div>
 <app-delete (onDelete)="ondeleteAcc($event)" (onCancel)="cancelChild()" [item]="acno"></app-delete>
 
 
-<div [ngClass]="acno?'s1':''" class="text-end">
+<div [ngClass]="acno?'s1':''" class="text-end" style="display: flex; justify-content: flex-end; gap: 20px; margin-bottom: 15px;">
     <a class="view" routerLink="/transaction">View Transaction History</a>
+    <a class="view fraud-link" routerLink="/fraud-detection">🛡️ Fraud Detection Dashboard</a>
 
 </div>
 

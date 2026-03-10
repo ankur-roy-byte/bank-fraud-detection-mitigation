@@ -1,0 +1,203 @@
+<div class="fraud-detection-container">
+  <!-- Header -->
+  <header class="fraud-header">
+    <div class="header-content">
+      <div class="brand">
+        <h1>🛡️ Fraud Detection & Mitigation</h1>
+        <p class="tagline">Real-time Transaction Monitoring System</p>
+      </div>
+      <div class="user-info">
+        <span class="welcome-text">Welcome, {{user}}</span>
+        <button class="btn btn-secondary" (click)="goToDashboard()">Dashboard</button>
+        <button class="btn btn-logout" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav">
+    <button
+      class="tab-button"
+      [class.active]="selectedTab === 'overview'"
+      (click)="selectTab('overview')">
+      📊 Overview
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="selectedTab === 'alerts'"
+      (click)="selectTab('alerts')">
+      🚨 Fraud Alerts ({{fraudAlerts.length}})
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="selectedTab === 'transactions'"
+      (click)="selectTab('transactions')">
+      💳 Suspicious Transactions ({{suspiciousTransactions.length}})
+    </button>
+  </nav>
+
+  <!-- Overview Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'overview'">
+    <div class="statistics-grid">
+      <div class="stat-card critical">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-details">
+          <h3>{{statistics.criticalAlerts || 0}}</h3>
+          <p>Critical Alerts</p>
+        </div>
+      </div>
+
+      <div class="stat-card high">
+        <div class="stat-icon">🟠</div>
+        <div class="stat-details">
+          <h3>{{statistics.highAlerts || 0}}</h3>
+          <p>High Priority Alerts</p>
+        </div>
+      </div>
+
+      <div class="stat-card medium">
+        <div class="stat-icon">🟡</div>
+        <div class="stat-details">
+          <h3>{{statistics.mediumAlerts || 0}}</h3>
+          <p>Medium Priority Alerts</p>
+        </div>
+      </div>
+
+      <div class="stat-card total">
+        <div class="stat-icon">📈</div>
+        <div class="stat-details">
+          <h3>{{statistics.totalAlerts || 0}}</h3>
+          <p>Total Alerts</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card">
+        <h3>💰 Total Suspicious Amount</h3>
+        <p class="amount">₹{{statistics.totalSuspiciousAmount || 0 | number}}</p>
+        <span class="info-text">Total value of flagged transactions</span>
+      </div>
+
+      <div class="info-card">
+        <h3>📊 Average Risk Score</h3>
+        <p class="amount">{{statistics.averageRiskScore?.toFixed(1) || 0}}</p>
+        <span class="info-text">Mean risk score across all suspicious transactions</span>
+      </div>
+    </div>
+
+    <div class="recent-section">
+      <h2>Recent Critical Alerts</h2>
+      <div class="alerts-list" *ngIf="fraudAlerts.length > 0; else noAlerts">
+        <div class="alert-item" *ngFor="let alert of fraudAlerts.slice(0, 3)" [ngClass]="getSeverityClass(alert.severity)">
+          <div class="alert-header">
+            <span class="alert-severity">{{alert.severity.toUpperCase()}}</span>
+            <span class="alert-time">{{alert.timestamp | date:'short'}}</span>
+          </div>
+          <div class="alert-body">
+            <p><strong>Account:</strong> {{alert.acno}}</p>
+            <p><strong>Reason:</strong> {{alert.reason}}</p>
+          </div>
+          <button class="btn-resolve" (click)="resolveAlert(alert.id)">Resolve</button>
+        </div>
+      </div>
+      <ng-template #noAlerts>
+        <p class="no-data">No fraud alerts detected. All systems normal.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Alerts Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'alerts'">
+    <div class="content-header">
+      <h2>🚨 Fraud Alerts Management</h2>
+      <p>Monitor and manage fraud detection alerts in real-time</p>
+    </div>
+
+    <div class="alerts-list" *ngIf="fraudAlerts.length > 0; else noAlertsTab">
+      <div class="alert-item" *ngFor="let alert of fraudAlerts" [ngClass]="getSeverityClass(alert.severity)">
+        <div class="alert-header">
+          <span class="alert-severity">{{alert.severity.toUpperCase()}}</span>
+          <span class="alert-time">{{alert.timestamp | date:'medium'}}</span>
+        </div>
+        <div class="alert-body">
+          <p><strong>Alert ID:</strong> {{alert.id}}</p>
+          <p><strong>Account Number:</strong> {{alert.acno}}</p>
+          <p><strong>Reason:</strong> {{alert.reason}}</p>
+          <div *ngIf="alert.transaction">
+            <p><strong>Transaction Amount:</strong> ₹{{alert.transaction.amount | number}}</p>
+            <p><strong>Transaction Type:</strong> {{alert.transaction.type}}</p>
+          </div>
+        </div>
+        <button class="btn-resolve" (click)="resolveAlert(alert.id)">✓ Resolve Alert</button>
+      </div>
+    </div>
+    <ng-template #noAlertsTab>
+      <div class="no-data-container">
+        <div class="success-icon">✅</div>
+        <p class="no-data">No active fraud alerts. System is operating normally.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Transactions Tab -->
+  <div class="tab-content" *ngIf="selectedTab === 'transactions'">
+    <div class="content-header">
+      <h2>💳 Suspicious Transactions</h2>
+      <p>Review transactions flagged by the fraud detection algorithm</p>
+    </div>
+
+    <div class="transactions-table" *ngIf="suspiciousTransactions.length > 0; else noTransactions">
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Account</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Risk Score</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let txn of suspiciousTransactions">
+            <td>{{txn.id}}</td>
+            <td>{{txn.acno}}</td>
+            <td>
+              <span class="txn-type" [class.withdraw]="txn.type === 'withdraw'">
+                {{txn.type}}
+              </span>
+            </td>
+            <td>₹{{txn.amount | number}}</td>
+            <td>
+              <span class="risk-score" [ngClass]="getRiskClass(txn.riskScore)">
+                {{txn.riskScore}}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class.suspicious]="txn.status === 'suspicious'">
+                {{txn.status}}
+              </span>
+            </td>
+            <td>{{txn.timestamp | date:'short'}}</td>
+            <td>{{txn.location || 'N/A'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noTransactions>
+      <div class="no-data-container">
+        <div class="success-icon">✅</div>
+        <p class="no-data">No suspicious transactions detected. All transactions are within normal parameters.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Footer -->
+  <footer class="fraud-footer">
+    <p>🛡️ Fraud Detection System v1.0 | Real-time monitoring and protection</p>
+    <p class="footer-note">This system uses advanced algorithms to detect and prevent fraudulent transactions</p>
+  </footer>
+</div>
